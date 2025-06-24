@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+        }
+        
+        /* Liquid background styles */
+        #background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: #ff416c;
+            background: -webkit-linear-gradient(to right, #ff4b2b, #ff416c); 
+            background: linear-gradient(to right, #ff4b2b, #ff416c);
+        }
+
+        #liquid-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            filter: blur(40px) contrast(30);
+        }
+        
+        .section-card {
+            background-color: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .section-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(42, 12, 214, 0.4);
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #bf94ff;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover:after, .nav-link.active:after {
+            width: 100%;
+        }
+        .social-icon:hover {
+            /* color property is for single-color SVGs, will not affect multi-color ones */
+            color: #bf94ff; 
+            opacity: 0.8;
+            transform: scale(1.1);
+        }
+        .social-icon {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="w-full">
+
+    <!-- Liquid Background -->
+    <div id="background-container">
+        <canvas id="liquid-canvas"></canvas>
+    </div>
+
+    <!-- Header & Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-md border-b border-white/10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="text-2xl font-black text-white">666liulusix's world</a>
+            <div class="hidden md:flex space-x-8 text-lg items-center">
+                <!-- Dropdown Menu for Career Tree -->
+                <div class="relative" id="career-tree-dropdown-container">
+                    <button id="career-tree-button" class="nav-link flex items-center">
+                        Career Tree
+                        <svg class="w-4 h-4 ml-1 transition-transform duration-200" id="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="career-tree-menu" class="hidden absolute left-1/2 -translate-x-1/2 mt-4 w-56 bg-black/60 backdrop-blur-lg rounded-md shadow-lg border border-white/10 py-2 z-50">
+                        <a href="#gundam" class="dropdown-item block px-4 py-2 text-sm text-gray-200 hover:bg-white/10">Gundam & Mecha</a>
+                        <a href="#sports" class="dropdown-item block px-4 py-2 text-sm text-gray-200 hover:bg-white/10">Football</a>
+                        <a href="#cars" class="dropdown-item block px-4 py-2 text-sm text-gray-200 hover:bg-white/10">Car Tuning</a>
+                        <a href="#tech" class="dropdown-item block px-4 py-2 text-sm text-gray-200 hover:bg-white/10">Tech & Engineering</a>
+                        <a href="#creative" class="dropdown-item block px-4 py-2 text-sm text-gray-200 hover:bg-white/10">Creative Pursuits</a>
+                    </div>
+                </div>
+            </div>
+             <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 space-y-1 bg-black/30 backdrop-blur-md">
+            <p class="text-center font-bold text-gray-400 mt-2 mb-1 uppercase text-sm">Career Tree</p>
+            <a href="#gundam" class="mobile-nav-link block text-center py-2 rounded-md hover:bg-white/10">Gundam & Mecha</a>
+            <a href="#sports" class="mobile-nav-link block text-center py-2 rounded-md hover:bg-white/10">Football</a>
+            <a href="#cars" class="mobile-nav-link block text-center py-2 rounded-md hover:bg-white/10">Car Tuning</a>
+            <a href="#tech" class="mobile-nav-link block text-center py-2 rounded-md hover:bg-white/10">Tech & Engineering</a>
+            <a href="#creative" class="mobile-nav-link block text-center py-2 rounded-md hover:bg-white/10">Creative Pursuits</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="h-screen flex items-center justify-center text-center">
+            <div class="bg-black/40 backdrop-blur-sm p-8 md:p-16 rounded-xl">
+                <h1 class="text-5xl md:text-8xl font-black text-white uppercase tracking-wider">666liulusix</h1>
+                <p class="text-xl md:text-2xl text-gray-300 mt-4">Exploring worlds, from code to custom cars.</p>
+                <div class="flex justify-center flex-wrap gap-x-6 gap-y-4 mt-8">
+                    <a href="#" class="social-icon text-white" title="X / Twitter">
+                        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon text-white" title="Instagram">
+                        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6m6.4 2.4a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10m0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon text-white" title="GitHub">
+                        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.419 2.865 8.166 6.839 9.489.5.092.682-.216.682-.482 0-.237-.009-.865-.014-1.698-2.782.602-3.369-1.34-3.369-1.34-.455-1.157-1.11-1.465-1.11-1.465-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.089 2.91.833.091-.647.35-1.086.635-1.337-2.22-.252-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.03-2.682-.103-.253-.446-1.27.098-2.645 0 0 .84-.269 2.75 1.025A9.547 9.547 0 0 1 12 6.837c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.375.203 2.392.1 2.645.64.698 1.027 1.59 1.027 2.682 0 3.842-2.338 4.687-4.566 4.935.359.307.678.917.678 1.85 0 1.335-.012 2.415-.012 2.741 0 .268.18.578.688.48C19.138 20.162 22 16.418 22 12A10 10 0 0 0 12 2z"/></svg>
+                    </a>
+                    <!-- TikTok / Douyin -->
+                    <a href="#" class="social-icon text-white" title="TikTok / 抖音">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/></svg>
+                    </a>
+                    <!-- Xiaohongshu -->
+                    <a href="#" class="social-icon text-white" title="小红书 (Xiaohongshu)">
+                        <svg class="w-8 h-8" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="24" height="24" rx="4" fill="#D82626"/>
+                            <text x="12" y="13.5" font-family="sans-serif" font-weight="bold" font-size="9" fill="white" text-anchor="middle" dominant-baseline="middle">小红书</text>
+                        </svg>
+                    </a>
+                    <!-- Bilibili -->
+                    <a href="#" class="social-icon" title="Bilibili">
+                        <svg class="w-8 h-8" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <g transform="scale(0.23)">
+                                <path d="M92.73 13.73H8.91C4.51 13.73 1 17.24 1 21.64v38.9c0 4.4 3.51 7.91 7.91 7.91h83.82c4.4 0 7.91-3.51 7.91-7.91V21.64c0-4.4-3.51-7.91-7.91-7.91z" fill="#EAEAEA"/>
+                                <path d="M69.37 13.73L76.28 1h-6.91l-6.92 12.73h6.92zM40.52 13.73L47.43 1h-6.91L33.6 13.73h6.92z" fill="#EAEAEA"/>
+                                <path d="M30.4 28.52V52.1h5.07V41.33h3.25c4.14 0 7.33-2.88 7.33-7.18s-3.19-7.18-7.33-7.18h-8.32zm7.25 8.74h-4.04V32.4h4.04c1.6 0 2.88 1.15 2.88 2.88.01 1.72-1.28 2.88-2.88 2.88zM53.7 34.69v17.41h-5.08V28.52h5.08v2.1c.14-.15.28-.3.42-.44 1.15-1.29 2.73-2.02 4.45-2.02 1.28 0 2.57.58 3.44 1.58v-1.72h5.08v17.55h-5.08V37.26c0-1.29-.43-2.44-1.29-3.3-.86-.87-1.87-1.3-3.02-1.3-1.15 0-2.3.43-3.16 1.3v13.5h.01z" fill="#FB7299"/>
+                                <path d="M71.04 28.52h5.08v23.58h-5.08V28.52zm12.3 6.17v17.41h-5.08V28.52h5.08v2.1c.14-.15.28-.3.42-.44 1.15-1.29 2.73-2.02 4.45-2.02 1.28 0 2.57.58 3.44 1.58v-1.72h5.08v17.55h-5.08V37.26c0-1.29-.43-2.44-1.29-3.3-.86-.87-1.87-1.3-3.02-1.3-1.15 0-2.3.43-3.16 1.3v13.5h.01z" fill="#FB7299"/>
+                            </g>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sections (All part of the Career Tree) -->
+        <div class="container mx-auto px-6 py-12 space-y-24">
+            
+            <section id="gundam" class="fade-in-section">
+                <h2 class="text-4xl font-bold text-center mb-12 uppercase tracking-widest">Gundam & Mecha</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="section-card rounded-lg overflow-hidden p-6">
+                        <img src="https://placehold.co/600x400/1a1a2e/e0e0e0?text=Gunpla+Builds" class="rounded-md mb-4" alt="Gundam Model">
+                        <h3 class="text-2xl font-bold mb-2 text-white">My Gundam collection</h3>
+                        <p>A collection of my prized Gunpla builds, from High Grade to Perfect Grade. Each one tells a story of patience and detail.</p>
+                    </div>
+                    <div class="section-card rounded-lg overflow-hidden p-6">
+                        <img src="https://placehold.co/600x400/1a1a2e/e0e0e0?text=Custom+Design" class="rounded-md mb-4" alt="Mecha Design">
+                        <h3 class="text-2xl font-bold mb-2 text-white">Personal Gundam design</h3>
+                        <p>Exploring my own concepts for mobile suits. A look at the evolution of giant robot design through my own creative lens.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="sports" class="fade-in-section">
+                <h2 class="text-4xl font-bold text-center mb-12 uppercase tracking-widest">My Football Journey</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="section-card rounded-lg overflow-hidden p-6">
+                        <img src="https://placehold.co/600x400/1a1a2e/e0e0e0?text=Clifton+Downs" class="rounded-md mb-4" alt="Football Pitch">
+                        <h3 class="text-2xl font-bold mb-2 text-white">My football journey in Bristol</h3>
+                        <p>Clifton Vales - playing in the England Association Football League on Clifton Downs.</p>
+                    </div>
+                    <div class="section-card rounded-lg overflow-hidden p-6">
+                        <img src="https://placehold.co/600x400/1a1a2e/e0e0e0?text=League+Table" class="rounded-md mb-4" alt="League Table">
+                        <h3 class="text-2xl font-bold mb-2 text-white">League Table</h3>
+                        <p>The latest league standings will be updated here. <a href="#" class="text-indigo-400 hover:text-indigo-300 font-semibold">View Table</a></p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="cars" class="fade-in-section">
+                <h2 class="text-4xl font-bold text-center mb-12 uppercase tracking-widest">Car Tuning</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                     <div class="section-card rounded-lg overflow-hidden p-6">
+                        <img src="5eed60bdfd0e0710ed2379d777825b5.jpg" class="rounded-md mb-4 object-cover h-64 w-full" alt="Red Toyota Corolla T-Sport parked on a street">
+                        <h3 class="text-2xl font-bold mb-2 text-white">My Project Car: Toyota Corolla T-Sport</h3>
+                        <p>Documenting the complete build of my T-Sport. <a href="#" class="text-indigo-400 hover:text-indigo-300 font-semibold">Follow the progress here.</a></p>
+                    </div>
+                    <div class="section-card rounded-lg overflow-hidden p-6">
+                        <img src="https://placehold.co/600x400/1a1a2e/e0e0e0?text=JDM+Classics" class="rounded-md mb-4" alt="JDM Cars">
+                        <h3 class="text-2xl font-bold mb-2 text-white">JDM Culture</h3>
+                        <p>A dive into the golden era of Japanese Domestic Market cars and their lasting impact on global car culture.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="tech" class="fade-in-section">
+                <h2 class="text-4xl font-bold text-center mb-12 uppercase tracking-widest">Tech & Engineering</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="section-card rounded-lg overflow-hidden p-6">
+                        <img src="https://placehold.co/600x400/1a1a2e/e0e0e0?text=Neural+Network" class="rounded-md mb-4" alt="AI">
+                        <h3 class="text-2xl font-bold mb-2 text-white">AI Learning Journey</h3>
+                        <p>Exploring the world of machine learning and neural networks. Projects, papers, and thoughts on the future of AI.</p>
+                    </div>
+                    <div class="section-card rounded-lg overflow-hidden p-6">
+                        <img src="https://placehold.co/600x400/1a1a2e/e0e0e0?text=Bridge+Design" class="rounded-md mb-4" alt="Engineering">
+                        <h3 class="text-2xl font-bold mb-2 text-white">Civil Engineering</h3>
+                        <p>Connecting my professional field with my passions. A look at iconic structures and the innovation behind them.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="creative" class="fade-in-section">
+                <h2 class="text-4xl font-bold text-center mb-12 uppercase tracking-widest">Creative Pursuits</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="section-card rounded-lg overflow-hidden p-6">
+                        <img src="https://placehold.co/600x400/1a1a2e/e0e0e0?text=My+Portfolio" class="rounded-md mb-4" alt="Photography">
+                        <h3 class="text-2xl font-bold mb-2 text-white">Photography</h3>
+                        <p>Capturing moments through my lens. A portfolio of my favorite shots, from cityscapes to portraits.</p>
+                    </div>
+                    <div class="section-card rounded-lg overflow-hidden p-6">
+                        <img src="https://placehold.co/600x400/1a1a2e/e0e0e0?text=Timeline" class="rounded-md mb-4" alt="Video Editing">
+                        <h3 class="text-2xl font-bold mb-2 text-white">Video Editing</h3>
+                        <p>Telling stories through motion. Showcasing my video projects, from short films to dynamic edits.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer class="text-center py-8 border-t border-white/10 mt-12">
+        <p>&copy; 2025 666liulusix. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Liquid Background Animation
+            const canvas = document.getElementById('liquid-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let metaballs = [];
+
+            const METABALLS_COUNT = 15;
+            const COLORS = ['#FFFFFF', '#FF6B6B', '#FF416C'];
+
+            class Metaball {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 1.5;
+                    this.vy = (Math.random() - 0.5) * 1.5;
+                    this.r = Math.random() * 80 + 80;
+                    this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x - this.r > width) this.x = -this.r;
+                    if (this.x + this.r < 0) this.x = width + this.r;
+                    if (this.y - this.r > height) this.y = -this.r;
+                    if (this.y + this.r < 0) this.y = height + this.r;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+            }
+
+            function init() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                metaballs = [];
+                for (let i = 0; i < METABALLS_COUNT; i++) {
+                    metaballs.push(new Metaball());
+                }
+            }
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                metaballs.forEach(ball => {
+                    ball.update();
+                    ball.draw();
+                });
+                requestAnimationFrame(animate);
+            }
+            window.addEventListener('resize', init);
+            init();
+            animate();
+            
+            // Mobile menu toggle
+            const menuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+            menuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // Dropdown menu logic
+            const dropdownButton = document.getElementById('career-tree-button');
+            const dropdownMenu = document.getElementById('career-tree-menu');
+            const dropdownArrow = document.getElementById('dropdown-arrow');
+            
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const isHidden = dropdownMenu.classList.toggle('hidden');
+                dropdownArrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+            });
+
+            document.addEventListener('click', () => {
+                if (!dropdownMenu.classList.contains('hidden')) {
+                    dropdownMenu.classList.add('hidden');
+                    dropdownArrow.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            dropdownMenu.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    dropdownMenu.classList.add('hidden');
+                    dropdownArrow.style.transform = 'rotate(0deg)';
+                });
+            });
+            
+            // Intersection Observer for fade-in animations
+            const sections = document.querySelectorAll('.fade-in-section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            sections.forEach(section => observer.observe(section));
+
+            // Active nav link highlighting
+            const allSections = document.querySelectorAll('main section');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                allSections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - window.innerHeight / 2) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                const careerTreeButton = document.getElementById('career-tree-button');
+                careerTreeButton.classList.remove('active');
+
+                const careerSections = ['gundam', 'sports', 'cars', 'tech', 'creative'];
+                if (careerSections.includes(current)) {
+                    careerTreeButton.classList.add('active');
+                }
+                
+                if (pageYOffset < allSections[1].offsetTop - window.innerHeight / 2) {
+                    careerTreeButton.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
